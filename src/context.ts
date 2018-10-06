@@ -2,10 +2,10 @@ import { ServicesContext } from 'gqlx-js';
 import { ApiCreator, Service } from './types';
 import { Request } from 'express';
 
-export function createContext<T>(
+export function createContext<TApi, TData>(
   req: undefined | Request,
-  services: Array<Service>,
-  createApi: ApiCreator<T>,
+  services: Array<Service<TData>>,
+  createApi: ApiCreator<TApi, TData>,
 ): ServicesContext {
   return {
     getService(name: string) {

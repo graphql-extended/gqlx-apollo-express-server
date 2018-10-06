@@ -12,9 +12,43 @@ An opinionated Express middleware bringing a pre-configured Apollo server with g
 
 ## Getting Started
 
-(tbd)
+To get started just install the package via npm.
+
+```bash
+npm i gqlx-apollo-express-server
+```
+
+Since Express is used as a peer dependency you need to have it installed already or you'll need to install it.
+
+```js
+import * as express from 'express';
+import { setupGateway, createServices } from 'gqlx-apollo-express-server';
+
+const port = +(process.env.PORT || 3000);
+const app = express();
+
+setupGateway(app, {
+  port,
+  host: 'http://www.example.com',
+  services: createServices(
+    [
+      {
+        name: 'default',
+        source: ``,
+        data: {},
+      },
+    ],
+  ),
+});
+
+app.listen(port);
+```
+
+The `gqlx-apollo-express-server` is service-based, i.e., we have to supply services for performing the GraphQL resolver duty. The advantage is that we can easily swap services during runtime, e.g., if these services relate to independent functionality such as microservices which are updated during we can reflect these updates in the GraphQL instance as well - without having to restart the server.
 
 ## Documentation
+
+A Node.js Express middleware for integrating an Apollo server supporting gqlx.
 
 (tbd)
 
@@ -26,7 +60,7 @@ We are totally open for contribution and appreciate any feedback, bug reports, o
 
 *What needs to be configured?*
 
-Only a bare minimum of configuration is necessary. The getting started contains a sample using only the required options.
+Only a bare minimum of configuration is necessary. The getting started contains a sample using only the required options. What services to expose and how these are defined is fully up to you.
 
 ## Changelog
 

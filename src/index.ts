@@ -1,18 +1,40 @@
 import * as express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { Server } from 'http';
+import { assertValidSchema } from 'graphql';
 import { apolloUploadExpress } from 'apollo-upload-server';
+import { makeExecutableSchema } from 'graphql-tools';
+import { compile, AvailableApi } from 'gqlx-js';
 import { createContext } from './context';
 import { getSchema } from './schema';
-import { GatewayOptions } from './types';
+import { GatewayOptions, Service, ServiceDefinition } from './types';
 import { tryParseJson } from './utils';
 import { getSubscriptionEndpoint, createSubscription } from './subscription';
 
-export function setupGateway<T>(app: express.Application, options: GatewayOptions<T>) {
+export function createService<TData>(name: string, gqlxSource: string, data: TData, api: AvailableApi = {}) {
+  const gql = compile(name, gqlxSource, api);
+  const service: Service<TData> = {
+    name,
+    createService: gql.createService,
+    schema: makeExecutableSchema({
+      typeDefs: gql.schema,
+      resolvers: gql.resolvers as any,
+    }),
+    data,
+  };
+  assertValidSchema(service.schema);
+  return service;
+}
+
+export function createServices<TData>(definitions: Array<ServiceDefinition<TData>>, api: AvailableApi = {}) {
+  return definitions.map(({ name, source, data }) => createService(name, source, data, api));
+}
+
+export function setupGateway<TApi, TData>(app: express.Application, options: GatewayOptions<TApi, TData>) {
   const {
-    maxFiles,
-    maxFileSize,
-    paths,
+    maxFiles = 1,
+    maxFileSize = 16 * 1024 * 1024,
+    paths = {},
     host,
     formatter = tryParseJson,
     services,

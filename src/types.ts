@@ -2,29 +2,35 @@ import { GraphQLSchema } from 'graphql';
 import { DynamicResolver } from 'gqlx-js';
 import { Request } from 'express';
 
-export interface Service {
+export interface Service<TData> {
   name: string;
   schema: GraphQLSchema;
-  url: string;
+  data: TData;
   createService(api: any): DynamicResolver;
 }
 
-export interface ApiCreator<T> {
-  (service: Service, req?: Request): T;
+export interface ServiceDefinition<TData> {
+  name: string;
+  source: string;
+  data: TData;
 }
 
-export interface GatewayOptions<T> {
+export interface ApiCreator<TApi, TData> {
+  (service: Service<TData>, req?: Request): TApi;
+}
+
+export interface GatewayOptions<TApi, TData> {
   port: number;
+  host: string;
+  services: Array<Service<TData>>;
   keepAlive?: number;
   tracing?: boolean;
   cacheControl?: boolean;
-  maxFileSize: number;
-  maxFiles: number;
-  host: string;
+  maxFileSize?: number;
+  maxFiles?: number;
   formatter?(error?: string): any;
-  services: Array<Service>;
-  createApi(service: Service, req?: Request): T;
-  paths: {
+  createApi(service: Service<TData>, req?: Request): TApi;
+  paths?: {
     graphiql?: string | false;
     subscriptions?: string;
     root?: string;

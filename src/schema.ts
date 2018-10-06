@@ -41,7 +41,7 @@ const rootSchema = makeExecutableSchema({
 
 let executableSchema = rootSchema;
 
-export function updateSchema(services: Array<Service>) {
+export function updateSchema<TData>(services: Array<Service<TData>>) {
   const schemas = services.map(m => m.schema);
   schemas.splice(0, 0, rootSchema);
 

@@ -19,8 +19,9 @@ export function getSubscriptionEndpoint(host: string, path = defaultSubscription
   return `${host}${path}`;
 }
 
-export function createSubscription<T>(server: Server, options: GatewayOptions<T>) {
-  const path = options.paths.subscriptions || defaultSubscriptionsPath;
+export function createSubscription<TApi, TData>(server: Server, options: GatewayOptions<TApi, TData>) {
+  const { paths = {} } = options;
+  const path = paths.subscriptions || defaultSubscriptionsPath;
   const subscription = new SubscriptionServer(
     {
       execute,

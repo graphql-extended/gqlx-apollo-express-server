@@ -1,7 +1,7 @@
 {
   "name": "gqlx-apollo-express-server",
   "version": "0.1.0",
-  "description": "",
+  "description": "A Node.js Express middleware for integrating an Apollo server supporting gqlx.",
   "main": "dist",
   "types": "dist",
   "scripts": {
