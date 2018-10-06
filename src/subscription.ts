@@ -1,36 +1,28 @@
 import { Server } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { execute, subscribe } from 'graphql';
-import { GatewayOptions } from './types';
-import { getSchema, onUpdate } from './schema';
+import { execute, subscribe, GraphQLSchema } from 'graphql';
+import { SubscriptionOptions } from './types';
 import { createContext } from './context';
+import { defaultSubscriptionsPath, defaultApiCreator } from './constants';
 
-const defaultSubscriptionsPath = '/subscriptions';
-
-export function getSubscriptionEndpoint(host: string, path = defaultSubscriptionsPath) {
-  host = host.replace('http', 'ws');
-
-  if (!path.startsWith('/') && !host.endsWith('/')) {
-    return `${host}/${path}`;
-  } else if (path.startsWith('/') && host.endsWith('/')) {
-    return `${host}/${path.substring(1)}`;
-  }
-
-  return `${host}${path}`;
+function getUpdater(subscription: any) {
+  return (schema: GraphQLSchema) => {
+    subscription.schema = schema;
+  };
 }
 
-export function createSubscription<TApi, TData>(server: Server, options: GatewayOptions<TApi, TData>) {
-  const { paths = {} } = options;
+export function createSubscription<TApi, TData>(server: Server, options: SubscriptionOptions<TApi, TData>) {
+  const { paths = {}, schema, services, createApi = defaultApiCreator } = options;
   const path = paths.subscriptions || defaultSubscriptionsPath;
   const subscription = new SubscriptionServer(
     {
       execute,
       subscribe,
       keepAlive: options.keepAlive,
-      schema: getSchema(),
+      schema: schema.get(),
       async onOperation(_message: any, params: any, ws: any) {
         const req = ws.upgradeReq;
-        const context = createContext(req, options.services, options.createApi);
+        const context = createContext(req, services, createApi);
         return {
           ...params,
           context,
@@ -42,10 +34,7 @@ export function createSubscription<TApi, TData>(server: Server, options: Gateway
       path,
     },
   );
-
-  const stopListening = onUpdate(schema => {
-    (subscription as any).schema = schema;
-  });
+  const stopListening = schema.onUpdate(getUpdater(subscription));
 
   return () => {
     stopListening();

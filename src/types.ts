@@ -1,6 +1,7 @@
 import { GraphQLSchema } from 'graphql';
 import { DynamicResolver } from 'gqlx-js';
 import { Request } from 'express';
+import { Server } from 'http';
 
 export interface Service<TData> {
   name: string;
@@ -19,6 +20,30 @@ export interface ApiCreator<TApi, TData> {
   (service: Service<TData>, req?: Request): TApi;
 }
 
+export interface ServerPaths {
+  graphiql?: string | false;
+  subscriptions?: string;
+  root?: string;
+}
+
+export interface Unsubscriber {
+  (): void;
+}
+
+export interface SchemaBag<TData> {
+  get(): GraphQLSchema;
+  onUpdate(cb: (schema: GraphQLSchema) => void): Unsubscriber;
+  update(services: Array<Service<TData>>): void;
+}
+
+export interface SubscriptionOptions<TApi, TData> {
+  schema: SchemaBag<TData>;
+  services: Array<Service<TData>>;
+  keepAlive?: number;
+  createApi?: ApiCreator<TApi, TData>;
+  paths?: ServerPaths;
+}
+
 export interface GatewayOptions<TApi, TData> {
   port: number;
   host: string;
@@ -29,10 +54,12 @@ export interface GatewayOptions<TApi, TData> {
   maxFileSize?: number;
   maxFiles?: number;
   formatter?(error?: string): any;
-  createApi(service: Service<TData>, req?: Request): TApi;
-  paths?: {
-    graphiql?: string | false;
-    subscriptions?: string;
-    root?: string;
-  };
+  createApi?: ApiCreator<TApi, TData>;
+  paths?: ServerPaths;
+}
+
+export interface GraphQLServer<TData> {
+  subscribe(server: Server): Unsubscriber;
+  update(): void;
+  insert(service: Service<TData>): void;
 }
