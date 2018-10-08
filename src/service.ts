@@ -1,7 +1,7 @@
-import { Service, ServiceDefinition } from './types';
 import { assertValidSchema } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 import { compile } from 'gqlx-js';
+import { Service, ServiceDefinition } from './types';
 import { defaultApi } from './constants';
 
 export function createService<TData>(name: string, gqlxSource: string, data: TData, api = defaultApi) {

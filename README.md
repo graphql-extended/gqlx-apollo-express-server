@@ -23,14 +23,11 @@ Since Express is used as a peer dependency you need to have it installed already
 ```js
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import { setupGateway, createServices } from 'gqlx-apollo-express-server';
+import { configureGqlx, createServices } from 'gqlx-apollo-express-server';
 
 const port = +(process.env.PORT || 3000);
 const app = express();
-
-app.use(bodyParser.json());
-
-setupGateway(app, {
+const gqlxServer = configureGqlx({
   port,
   host: 'http://www.example.com',
   services: createServices([
@@ -48,6 +45,8 @@ setupGateway(app, {
   ]),
 });
 
+app.use(bodyParser.json());
+gqlxServer.install(app);
 app.listen(port);
 ```
 

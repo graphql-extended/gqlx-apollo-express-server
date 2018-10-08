@@ -1,4 +1,3 @@
-import { Application } from 'express';
 import { apolloUploadExpress } from 'apollo-upload-server';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { createContext } from './context';
@@ -8,10 +7,7 @@ import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
 
-export function setupGateway<TApi, TData>(
-  app: Application,
-  options: GatewayOptions<TApi, TData>,
-): GraphQLServer<TData> {
+export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>): GraphQLServer<TData> {
   const {
     maxFiles = 1,
     maxFileSize = 16 * 1024 * 1024,
@@ -24,44 +20,46 @@ export function setupGateway<TApi, TData>(
     tracing = false,
     cacheControl = true,
   } = options;
-  const root = paths.root || defaultRootPath;
   const schema = createSchema(services);
 
-  if (paths.graphiql !== false) {
-    const path = paths.graphiql || defaultGraphiQLPath;
-    const subscriptionsEndpoint = getSubscriptionEndpoint(host, paths.subscriptions);
-
-    app.use(
-      path,
-      graphiqlExpress({
-        endpointURL: root,
-        subscriptionsEndpoint,
-      }),
-    );
-  }
-
-  app.use(
-    root,
-    apolloUploadExpress({
-      maxFileSize,
-      maxFiles,
-    }),
-    graphqlExpress(req => ({
-      schema: schema.get(),
-      context: createContext(req, services, createApi),
-      formatError(err: any) {
-        const path = (err && err.path && err.path[0]) || 'error';
-        const message = formatter(err && err.message);
-        return {
-          [path]: message,
-        };
-      },
-      tracing,
-      cacheControl,
-    })),
-  );
-
   return {
+    install(app) {
+      const root = paths.root || defaultRootPath;
+
+      if (paths.graphiql !== false) {
+        const path = paths.graphiql || defaultGraphiQLPath;
+        const subscriptionsEndpoint = getSubscriptionEndpoint(host, paths.subscriptions);
+
+        app.use(
+          path,
+          graphiqlExpress({
+            endpointURL: root,
+            subscriptionsEndpoint,
+          }),
+        );
+      }
+
+      app.use(
+        root,
+        apolloUploadExpress({
+          maxFileSize,
+          maxFiles,
+        }),
+        graphqlExpress(req => ({
+          schema: schema.get(),
+          context: createContext(req, services, createApi),
+          formatError(err: any) {
+            const path = (err && err.path && err.path[0]) || 'error';
+            const message = formatter(err && err.message);
+            return {
+              [path]: message,
+            };
+          },
+          tracing,
+          cacheControl,
+        })),
+      );
+    },
     subscribe(server) {
       const unsubscribe = createSubscription(server, {
         keepAlive,

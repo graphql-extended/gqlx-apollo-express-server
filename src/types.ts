@@ -1,6 +1,6 @@
 import { GraphQLSchema } from 'graphql';
 import { DynamicResolver } from 'gqlx-js';
-import { Request } from 'express';
+import { Request, Application } from 'express';
 import { Server } from 'http';
 
 export interface Service<TData> {
@@ -59,6 +59,7 @@ export interface GatewayOptions<TApi, TData> {
 }
 
 export interface GraphQLServer<TData> {
+  install(application: Application): void;
   subscribe(server: Server): Unsubscriber;
   update(): void;
   insert(service: Service<TData>): void;
