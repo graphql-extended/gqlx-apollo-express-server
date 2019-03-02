@@ -1,6 +1,6 @@
 {
   "name": "gqlx-apollo-express-server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Node.js Express middleware for integrating an Apollo server supporting gqlx.",
   "main": "dist",
   "types": "dist",
@@ -10,7 +10,7 @@
     "test": "npm run lint && npm run test:unit",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "prettier": "prettier --config prettier.config.js --write 'src/**/*.ts'",
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc --project tsconfig.json && cp src/*.d.ts dist/"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,8 @@
   },
   "keywords": [
     "graphql",
+    "express",
+    "middleware",
     "schema"
   ],
   "author": "graphql-extended <gqlx@anglevisions.com>",
@@ -28,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/graphql-extended/gqlx-apollo-express-server/issues"
   },
-  "homepage": "https://gqlx.github.io",
+  "homepage": "https://graphql-extended.github.io",
   "dependencies": {
     "apollo-server-express": "^1.3.6",
     "apollo-upload-server": "^7.1.0",

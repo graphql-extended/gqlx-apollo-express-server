@@ -1,5 +1,10 @@
 # gqlx Node.js Express Middleware using Apollo Server Changelog
 
+## 0.3.1
+
+- Corrected service resolution
+- Exported `constants`
+
 ## 0.3.0
 
 - Updated dependencies (https://www.npmjs.com/advisories/786)

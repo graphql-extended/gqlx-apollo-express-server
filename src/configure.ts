@@ -1,4 +1,4 @@
-/// <reference path="./apollo-upload-server.d.ts" />
+import './apollo-upload-server';
 import { apolloUploadExpress } from 'apollo-upload-server';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { createContext } from './context';
@@ -73,28 +73,28 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
     },
     update(newService?: Service<TApi, TData>) {
       if (newService) {
-        const newServices = services.map(oldService => (oldService === newService ? newService : oldService));
+        const serviceName = newService.name;
+        const newServices = services.map(oldService => (oldService.name === serviceName ? newService : oldService));
         services.splice(0, services.length, ...newServices);
       }
 
       schema.update(services);
     },
     insert(service) {
-      const serviceName = service.name;
-      const existingService = gqlxServer.get(serviceName);
+      const existingService = gqlxServer.get(service.name);
 
       if (existingService !== undefined) {
         gqlxServer.update(service);
       } else {
         const newServices = [...services, service];
-        schema.update(newServices);
         services.splice(0, services.length, ...newServices);
+        gqlxServer.update();
       }
     },
-    remove(service) {
-      const newServices = services.filter(svc => svc !== service);
-      schema.update(newServices);
+    remove(serviceName) {
+      const newServices = services.filter(svc => svc.name !== serviceName);
       services.splice(0, services.length, ...newServices);
+      gqlxServer.update();
     },
     get(serviceName) {
       const [service] = services.filter(svc => svc.name === serviceName);

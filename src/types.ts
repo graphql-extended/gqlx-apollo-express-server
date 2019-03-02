@@ -105,7 +105,7 @@ export interface GatewayOptions<TApi, TData> {
    * @param error The error to format.
    * @returns The formatted error message.
    */
-  formatter?(error?: string): any;
+  formatter?(error?: string): string;
   /**
    * Creates the API to be used by the services.
    */
@@ -147,7 +147,7 @@ export interface GraphQLServer<TApi, TData> {
    * Removes an existing service during runtime.
    * @param service The service to remove.
    */
-  remove(service: Service<TApi, TData>): void;
+  remove(serviceName: string): void;
   /**
    * Gets an existing service specified by its name.
    * @param serviceName The name of the service to get.
