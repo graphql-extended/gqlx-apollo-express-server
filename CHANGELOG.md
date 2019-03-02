@@ -1,5 +1,9 @@
 # gqlx Node.js Express Middleware using Apollo Server Changelog
 
+## 0.3.2
+
+- Removed apollo-server declaration
+
 ## 0.3.1
 
 - Corrected service resolution

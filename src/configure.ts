@@ -1,5 +1,3 @@
-import './apollo-upload-server';
-import { apolloUploadExpress } from 'apollo-upload-server';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { createContext } from './context';
 import { GatewayOptions, GraphQLServer, Service } from './types';
@@ -7,6 +5,8 @@ import { getSubscriptionEndpoint, tryParseJson } from './utils';
 import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
+
+const { apolloUploadExpress } = require('apollo-upload-server');
 
 export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>) {
   const {
