@@ -46,7 +46,7 @@ const gqlxServer = configureGqlx({
 });
 
 app.use(bodyParser.json());
-gqlxServer.install(app);
+gqlxServer.applyMiddleware(app);
 app.listen(port);
 ```
 
@@ -56,7 +56,70 @@ The `gqlx-apollo-express-server` is service-based, i.e., we have to supply servi
 
 A Node.js Express middleware for integrating an Apollo server supporting gqlx.
 
-(tbd)
+All you need is to use the `configureGqlx` method for configuring everything you need. The object is ready to be used on an express application. It will install multiple middlewares (depending on the configuration) to serve GraphQL (and potentially some other stuff, such as an GraphiQL instance).
+
+```js
+// ...
+import { configureGqlx } from 'gqlx-apollo-express-server';
+
+const app = express();
+configureGqlx({ port, /* ... */ }).applyMiddleware(app);
+```
+
+Right now the following options are supported:
+
+```ts
+interface GatewayOptions<TApi, TData> {
+  /**
+   * The port of the server.
+   */
+  port: number;
+  /**
+   * The (external) hostname for lookups.
+   */
+  host: string;
+  /**
+   * The different services to register.
+   */
+  services: Array<Service<TApi, TData>>;
+  /**
+   * The optional keep alive in milliseconds.
+   */
+  keepAlive?: number;
+  /**
+   * Activates the optional tracing.
+   */
+  tracing?: boolean;
+  /**
+   * Activates the optional cache-control.
+   */
+  cacheControl?: boolean;
+  /**
+   * Optionally, sets the max. size of a file (in bytes).
+   */
+  maxFileSize?: number;
+  /**
+   * Optionally, sets the max. number of files to upload.
+   */
+  maxFiles?: number;
+  /**
+   * Defines an error formatter.
+   * @param error The error to format.
+   * @returns The formatted error message.
+   */
+  formatter?(error?: string): any;
+  /**
+   * Creates the API to be used by the services.
+   */
+  createApi?: ApiCreator<TApi, TData>;
+  /**
+   * Optionally, changes the used server paths.
+   */
+  paths?: ServerPaths;
+}
+```
+
+Only the first three (`port`, `host`, and `services`) are required.
 
 ## Contributing
 

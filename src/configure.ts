@@ -1,13 +1,14 @@
+/// <reference path="./apollo-upload-server.d.ts" />
 import { apolloUploadExpress } from 'apollo-upload-server';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { createContext } from './context';
-import { GatewayOptions, GraphQLServer } from './types';
+import { GatewayOptions, GraphQLServer, Service } from './types';
 import { getSubscriptionEndpoint, tryParseJson } from './utils';
 import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
 
-export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>): GraphQLServer<TData> {
+export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>) {
   const {
     maxFiles = 1,
     maxFileSize = 16 * 1024 * 1024,
@@ -21,9 +22,8 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
     cacheControl = true,
   } = options;
   const schema = createSchema(services);
-
-  return {
-    install(app) {
+  const gqlxServer: GraphQLServer<TApi, TData> = {
+    applyMiddleware(app) {
       const root = paths.root || defaultRootPath;
 
       if (paths.graphiql !== false) {
@@ -71,24 +71,35 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
       server.on('close', unsubscribe);
       return unsubscribe;
     },
-    update() {
+    update(newService?: Service<TApi, TData>) {
+      if (newService) {
+        const newServices = services.map(oldService => (oldService === newService ? newService : oldService));
+        services.splice(0, services.length, ...newServices);
+      }
+
       schema.update(services);
     },
     insert(service) {
       const serviceName = service.name;
-      const index = services.findIndex(svc => svc.name === serviceName);
-      const newServices =
-        index !== -1
-          ? services.map(oldService => {
-              if (oldService.name === serviceName) {
-                return service;
-              }
+      const existingService = gqlxServer.get(serviceName);
 
-              return oldService;
-            })
-          : [...services, service];
+      if (existingService !== undefined) {
+        gqlxServer.update(service);
+      } else {
+        const newServices = [...services, service];
+        schema.update(newServices);
+        services.splice(0, services.length, ...newServices);
+      }
+    },
+    remove(service) {
+      const newServices = services.filter(svc => svc !== service);
       schema.update(newServices);
       services.splice(0, services.length, ...newServices);
     },
+    get(serviceName) {
+      const [service] = services.filter(svc => svc.name === serviceName);
+      return service;
+    },
   };
+  return gqlxServer;
 }

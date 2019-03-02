@@ -4,7 +4,7 @@ import { Request } from 'express';
 
 export function createContext<TApi, TData>(
   req: undefined | Request,
-  services: Array<Service<TData>>,
+  services: Array<Service<TApi, TData>>,
   createApi: ApiCreator<TApi, TData>,
 ): ServicesContext {
   return {

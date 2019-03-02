@@ -27,5 +27,5 @@ const gqlx = configureGqlx({
 });
 
 app.use(bodyParser.json());
-gqlx.install(app);
+gqlx.applyMiddleware(app);
 app.listen(port);

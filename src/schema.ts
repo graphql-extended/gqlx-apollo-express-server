@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import { SchemaBag, Service } from './types';
 import { GraphQLSchema } from 'graphql';
 
-function createFromServices<TData>(rootSchema: GraphQLSchema, services: Array<Service<TData>>) {
+function createFromServices<TApi, TData>(rootSchema: GraphQLSchema, services: Array<Service<TApi, TData>>) {
   const schemas = services.map(m => m.schema);
   schemas.splice(0, 0, rootSchema);
   return mergeSchemas({
@@ -13,7 +13,7 @@ function createFromServices<TData>(rootSchema: GraphQLSchema, services: Array<Se
   });
 }
 
-export function createSchema<TData>(services: Array<Service<TData>>): SchemaBag<TData> {
+export function createSchema<TApi, TData>(services: Array<Service<TApi, TData>>): SchemaBag<TApi, TData> {
   const events = new EventEmitter();
   const rootSchema = makeExecutableSchema({
     typeDefs: `
