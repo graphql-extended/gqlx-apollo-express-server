@@ -1,11 +1,17 @@
 import { assertValidSchema } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import { compile } from 'gqlx-js';
+import { compile, GqlTransformOptions } from 'gqlx-js';
 import { Service, ServiceDefinition } from './types';
 import { defaultApi } from './constants';
 
-export function createService<TApi, TData>(name: string, gqlxSource: string, data: TData, api = defaultApi) {
-  const gql = compile(name, gqlxSource, api);
+export function createService<TApi, TData>(
+  name: string,
+  gqlxSource: string,
+  data: TData,
+  api = defaultApi,
+  options?: GqlTransformOptions,
+) {
+  const gql = compile(name, gqlxSource, api, options);
   const service: Service<TApi, TData> = {
     name,
     createService: gql.createService,
@@ -19,6 +25,10 @@ export function createService<TApi, TData>(name: string, gqlxSource: string, dat
   return service;
 }
 
-export function createServices<TApi, TData>(definitions: Array<ServiceDefinition<TData>>, api = defaultApi) {
-  return definitions.map(({ name, source, data }) => createService<TApi, TData>(name, source, data, api));
+export function createServices<TApi, TData>(
+  definitions: Array<ServiceDefinition<TData>>,
+  api = defaultApi,
+  options?: GqlTransformOptions,
+) {
+  return definitions.map(({ name, source, data }) => createService<TApi, TData>(name, source, data, api, options));
 }
