@@ -1,5 +1,9 @@
 # gqlx Node.js Express Middleware using Apollo Server Changelog
 
+## 0.3.5
+
+- Updated dependencies
+
 ## 0.3.4
 
 - Added options for compilation (#1)
