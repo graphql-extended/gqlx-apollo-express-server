@@ -101,6 +101,10 @@ export interface GatewayOptions<TApi, TData> {
    */
   maxFiles?: number;
   /**
+   * Optionally, adds a custom logger for errors.
+   */
+  logError?(path: string, details: any): void;
+  /**
    * Defines an error formatter.
    * @param error The error to format.
    * @returns The formatted error message.

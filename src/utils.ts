@@ -1,5 +1,9 @@
 import { defaultSubscriptionsPath } from './constants';
 
+export function defaultErrorLogger(path: string, details: any) {
+  console.error(`Encountered an error at "%s": %s`, path, details);
+}
+
 export function tryParseJson(message?: string) {
   if (message) {
     try {

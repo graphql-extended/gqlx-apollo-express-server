@@ -1,5 +1,10 @@
 # gqlx Node.js Express Middleware using Apollo Server Changelog
 
+## 0.4.0
+
+- Updated dependencies
+- Added option to configure error logging
+
 ## 0.3.7
 
 - Updated dependencies
