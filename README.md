@@ -22,7 +22,6 @@ Since Express is used as a peer dependency you need to have it installed already
 
 ```js
 import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import { configureGqlx, createServices } from 'gqlx-apollo-express-server';
 
 const port = +(process.env.PORT || 3000);
@@ -45,7 +44,6 @@ const gqlxServer = configureGqlx({
   ]),
 });
 
-app.use(bodyParser.json());
 gqlxServer.applyMiddleware(app);
 app.listen(port);
 ```
