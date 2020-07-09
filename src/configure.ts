@@ -34,7 +34,7 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
         },
         schema: schema.get(),
         context({ req }: { req: Request }) {
-          return createContext(req, services, createApi)
+          return createContext(req, services, createApi);
         },
         formatError(err: any) {
           const path = (err && err.path && err.path[0]) || 'error';
@@ -44,10 +44,13 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
             [path]: details,
           };
         },
-        playground: paths.graphiql !== false ? {
-          endpoint: paths.graphiql || defaultGraphiQLPath,
-          subscriptionEndpoint: getSubscriptionEndpoint(host, paths.subscriptions)
-        } : false,
+        playground:
+          paths.graphiql !== false
+            ? {
+                endpoint: paths.graphiql || defaultGraphiQLPath,
+                subscriptionEndpoint: getSubscriptionEndpoint(host, paths.subscriptions),
+              }
+            : false,
       });
 
       const path = paths.root || defaultRootPath;
