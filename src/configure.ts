@@ -5,6 +5,7 @@ import { getSubscriptionEndpoint, tryParseJson, defaultErrorLogger } from './uti
 import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
+import { createGateway } from './gateway';
 
 const { ApolloServer } = require('apollo-server-express');
 
@@ -25,6 +26,8 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
   const schema = createSchema(services);
   const gqlxServer: GraphQLServer<TApi, TData> = {
     applyMiddleware(app) {
+      const gateway = createGateway(schema);
+
       const server = new ApolloServer({
         tracing,
         cacheControl,
@@ -32,7 +35,8 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
           maxFiles,
           maxFileSize,
         },
-        schema: schema.get(),
+        subscriptions: false,
+        gateway,
         context({ req }: { req: Request }) {
           return createContext(req, services, createApi);
         },
