@@ -21,7 +21,8 @@
       "es2015"
     ],
     "suppressImplicitAnyIndexErrors": true,
-    "allowSyntheticDefaultImports": false
+    "allowSyntheticDefaultImports": false,
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts"
