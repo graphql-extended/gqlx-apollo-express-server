@@ -1,9 +1,8 @@
+import { makeExecutableSchema } from 'apollo-server-express';
 import { assertValidSchema } from 'graphql';
 import { compile, GqlTransformOptions } from 'gqlx-js';
 import { Service, ServiceDefinition } from './types';
 import { defaultApi } from './constants';
-
-const { makeExecutableSchema } = require('apollo-server-express');
 
 export function createService<TApi, TData>(
   name: string,

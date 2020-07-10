@@ -1,9 +1,8 @@
+import { makeExecutableSchema, mergeSchemas } from 'apollo-server-express';
 import * as GraphQLJSON from 'graphql-type-json';
 import { EventEmitter } from 'events';
 import { SchemaBag, Service } from './types';
 import { GraphQLSchema } from 'graphql';
-
-const { makeExecutableSchema, mergeSchemas } = require('apollo-server-express');
 
 function createFromServices<TApi, TData>(rootSchema: GraphQLSchema, services: Array<Service<TApi, TData>>) {
   const schemas = services.map(m => m.schema);

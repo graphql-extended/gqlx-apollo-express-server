@@ -1,3 +1,5 @@
+import { ApolloServer } from 'apollo-server-express';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { Request } from 'express';
 import { createContext } from './context';
 import { GatewayOptions, GraphQLServer, Service } from './types';
@@ -6,8 +8,6 @@ import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
 import { createGateway } from './gateway';
-
-const { ApolloServer } = require('apollo-server-express');
 
 export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>) {
   const {
@@ -40,13 +40,13 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
         context({ req }: { req: Request }) {
           return createContext(req, services, createApi);
         },
-        formatError(err: any) {
+        formatError(err: GraphQLError) {
           const path = (err && err.path && err.path[0]) || 'error';
           const details = formatter(err && err.message);
           logError(String(path), details);
           return {
             [path]: details,
-          };
+          } as GraphQLFormattedError;
         },
         playground:
           paths.graphiql !== false
