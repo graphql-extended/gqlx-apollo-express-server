@@ -18,6 +18,7 @@ export function createSchema<TApi, TData>(services: Array<Service<TApi, TData>>)
   const rootSchema = makeExecutableSchema({
     typeDefs: `
       scalar JSON
+      scalar Upload
 
       type Query {
         _: Boolean
