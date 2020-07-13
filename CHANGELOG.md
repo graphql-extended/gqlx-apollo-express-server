@@ -2,7 +2,7 @@
 
 ## 0.5.0
 
-- 🚀 Migrate to Apollo Server 2.0
+- 🚀 Migrate to Apollo Server 2.x
 
 ## 0.4.0
 
