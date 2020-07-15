@@ -118,6 +118,10 @@ export interface GatewayOptions<TApi, TData> {
    * Optionally, changes the used server paths.
    */
   paths?: ServerPaths;
+  /**
+   * Enables and disables schema introspection. By default is true.
+   */
+  introspection?: boolean;
 }
 
 export interface GraphQLServer<TApi, TData> {
