@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import { configureGqlx, createServices } from './index';
 
 const port = +(process.env.PORT || 3000);
@@ -26,6 +25,5 @@ const gqlx = configureGqlx({
   ]),
 });
 
-app.use(bodyParser.json());
 gqlx.applyMiddleware(app);
 app.listen(port);

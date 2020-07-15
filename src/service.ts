@@ -1,5 +1,5 @@
+import { makeExecutableSchema } from 'apollo-server-express';
 import { assertValidSchema } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
 import { compile, GqlTransformOptions } from 'gqlx-js';
 import { Service, ServiceDefinition } from './types';
 import { defaultApi } from './constants';

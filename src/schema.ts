@@ -1,10 +1,8 @@
+import { makeExecutableSchema, mergeSchemas } from 'apollo-server-express';
 import * as GraphQLJSON from 'graphql-type-json';
-import { mergeSchemas, makeExecutableSchema } from 'graphql-tools';
 import { EventEmitter } from 'events';
 import { SchemaBag, Service } from './types';
 import { GraphQLSchema } from 'graphql';
-
-const { GraphQLUpload } = require('apollo-upload-server');
 
 function createFromServices<TApi, TData>(rootSchema: GraphQLSchema, services: Array<Service<TApi, TData>>) {
   const schemas = services.map(m => m.schema);
@@ -43,7 +41,6 @@ export function createSchema<TApi, TData>(services: Array<Service<TApi, TData>>)
       Query: {},
       Mutation: {},
       Subscription: {},
-      Upload: GraphQLUpload,
       JSON: GraphQLJSON,
     },
   });

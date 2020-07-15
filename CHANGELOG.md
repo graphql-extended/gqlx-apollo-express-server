@@ -1,5 +1,9 @@
 # gqlx Node.js Express Middleware using Apollo Server Changelog
 
+## 0.5.0
+
+- 🚀 Migrate to Apollo Server 2.x
+
 ## 0.4.0
 
 - Updated dependencies

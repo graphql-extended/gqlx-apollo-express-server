@@ -1,12 +1,13 @@
-import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { Request } from 'express';
 import { createContext } from './context';
 import { GatewayOptions, GraphQLServer, Service } from './types';
 import { getSubscriptionEndpoint, tryParseJson, defaultErrorLogger } from './utils';
 import { createSubscription } from './subscription';
 import { createSchema } from './schema';
 import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
-
-const { apolloUploadExpress } = require('apollo-upload-server');
+import { createGateway } from './gateway';
 
 export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>) {
   const {
@@ -25,42 +26,41 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
   const schema = createSchema(services);
   const gqlxServer: GraphQLServer<TApi, TData> = {
     applyMiddleware(app) {
-      const root = paths.root || defaultRootPath;
+      const gateway = createGateway(schema);
 
-      if (paths.graphiql !== false) {
-        const path = paths.graphiql || defaultGraphiQLPath;
-        const subscriptionsEndpoint = getSubscriptionEndpoint(host, paths.subscriptions);
-
-        app.use(
-          path,
-          graphiqlExpress({
-            endpointURL: root,
-            subscriptionsEndpoint,
-          }),
-        );
-      }
-
-      app.use(
-        root,
-        apolloUploadExpress({
-          maxFileSize,
+      const server = new ApolloServer({
+        tracing,
+        cacheControl,
+        uploads: {
           maxFiles,
-        }),
-        graphqlExpress(req => ({
-          schema: schema.get(),
-          context: createContext(req, services, createApi),
-          formatError(err: any) {
-            const path = (err && err.path && err.path[0]) || 'error';
-            const details = formatter(err && err.message);
-            logError(path, details);
-            return {
-              [path]: details,
-            };
-          },
-          tracing,
-          cacheControl,
-        })),
-      );
+          maxFileSize,
+        },
+        subscriptions: false,
+        gateway,
+        context({ req }: { req: Request }) {
+          return createContext(req, services, createApi);
+        },
+        formatError(err: GraphQLError) {
+          const path = (err && err.path && err.path[0]) || 'error';
+          const details = formatter(err && err.message);
+          logError(String(path), details);
+          return {
+            [path]: details,
+          } as GraphQLFormattedError;
+        },
+        playground:
+          paths.graphiql !== false
+            ? {
+                endpoint: paths.graphiql || defaultGraphiQLPath,
+                subscriptionEndpoint: getSubscriptionEndpoint(host, paths.subscriptions),
+              }
+            : false,
+      });
+
+      const path = paths.root || defaultRootPath;
+      server.applyMiddleware({ app, path });
+
+      return server;
     },
     subscribe(server) {
       const unsubscribe = createSubscription(server, {
