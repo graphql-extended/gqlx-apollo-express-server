@@ -16,6 +16,7 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
     paths = {},
     host,
     keepAlive,
+    introspection = true,
     logError = defaultErrorLogger,
     formatter = tryParseJson,
     services,
@@ -29,6 +30,7 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
       const gateway = createGateway(schema);
 
       const server = new ApolloServer({
+        introspection,
         tracing,
         cacheControl,
         uploads: {
