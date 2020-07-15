@@ -6,7 +6,7 @@ import { GatewayOptions, GraphQLServer, Service } from './types';
 import { getSubscriptionEndpoint, tryParseJson, defaultErrorLogger } from './utils';
 import { createSubscription } from './subscription';
 import { createSchema } from './schema';
-import { defaultGraphiQLPath, defaultRootPath, defaultApiCreator } from './constants';
+import { defaultEndpointPath, defaultApiCreator } from './constants';
 import { createGateway } from './gateway';
 
 export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>) {
@@ -28,6 +28,7 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
   const gqlxServer: GraphQLServer<TApi, TData> = {
     applyMiddleware(app) {
       const gateway = createGateway(schema);
+      const path = paths.endpoint || defaultEndpointPath;
 
       const server = new ApolloServer({
         introspection,
@@ -53,14 +54,17 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
         playground:
           paths.graphiql !== false
             ? {
-                endpoint: paths.graphiql || defaultGraphiQLPath,
+                endpoint: path,
                 subscriptionEndpoint: getSubscriptionEndpoint(host, paths.subscriptions),
               }
             : false,
       });
 
-      const path = paths.root || defaultRootPath;
       server.applyMiddleware({ app, path });
+
+      if (typeof paths.graphiql === 'string' && paths.graphiql !== path) {
+        app.get(paths.graphiql, (_, res) => res.redirect(path));
+      }
 
       return server;
     },
@@ -117,5 +121,6 @@ export function configureGqlx<TApi, TData>(options: GatewayOptions<TApi, TData>)
       return service;
     },
   };
+
   return gqlxServer;
 }

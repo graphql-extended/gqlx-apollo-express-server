@@ -44,9 +44,9 @@ export interface ServerPaths {
    */
   subscriptions?: string;
   /**
-   * Path for the root GraphQL endpoint.
+   * Path for the GraphQL endpoint.
    */
-  root?: string;
+  endpoint?: string;
 }
 
 export interface Unsubscriber {

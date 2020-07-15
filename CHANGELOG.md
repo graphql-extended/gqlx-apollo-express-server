@@ -3,6 +3,7 @@
 ## 0.5.0
 
 - 🚀 Migrate to Apollo Server 2.x
+- Changed `paths.root` to `paths.endpoint`
 
 ## 0.4.0
 
