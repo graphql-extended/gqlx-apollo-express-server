@@ -1,6 +1,6 @@
 # gqlx Node.js Express Middleware using Apollo Server
 
-[![Build Status](https://travis-ci.org/graphql-extended/gqlx-apollo-express-server.svg?branch=master)](https://travis-ci.org/graphql-extended/gqlx-apollo-express-server)
+[![Build CI](https://github.com/graphql-extended/gqlx-apollo-express-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/graphql-extended/gqlx-apollo-express-server/actions/workflows/build.yml)
 [![npm](https://img.shields.io/npm/v/gqlx-apollo-express-server.svg)](https://www.npmjs.com/package/gqlx-apollo-express-server)
 [![node](https://img.shields.io/node/v/gqlx-apollo-express-server.svg)](https://www.npmjs.com/package/gqlx-apollo-express-server)
 [![GitHub tag](https://img.shields.io/github/tag/graphql-extended/gqlx-apollo-express-server.svg)](https://github.com/graphql-extended/gqlx-apollo-express-server/releases)
